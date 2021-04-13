@@ -8,7 +8,7 @@ onready var fps_time_usec : int = int(fps_time * 1000000.0)
 
 #used for delta
 var pre_time := 0.0
-onready var time := OS.get_ticks_usec()
+onready var time : int
 
 onready var thread : Thread = Thread.new()
 var stop = false
@@ -27,6 +27,7 @@ func _ready() -> void:
 	var _err = thread.start(self, "run", null, Thread.PRIORITY_HIGH)
 
 func run(_args) -> void:
+	time = OS.get_ticks_usec()
 	while(!stop):
 		pre_time = OS.get_ticks_usec()
 		
@@ -36,12 +37,11 @@ func run(_args) -> void:
 		#this gives us our fps
 		OS.delay_usec(fps_time_usec)
 		
-#		_pre_step()
+		_pre_step()
 		_step(delta)
 		_post_step()
 		
 		time = OS.get_ticks_usec()
-	
 	
 
 func _pre_step() -> void:

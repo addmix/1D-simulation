@@ -10,8 +10,15 @@ export var friction : float = 0.0 #could be called damping
 export var bounce : float = 0.0
 export var mass : float = 1.0
 
-export var shape : Resource
+var shape : SimulationShape
 
+func _ready() -> void:
+	var children : Array = get_children()
+	
+	for child in children:
+		if child.get_type() == "SimulationShape":
+			shape = child
+			break
 
 func _step(delta : float) -> void:
 	if !is_inside_tree():
@@ -43,49 +50,24 @@ func test_move(a : SimulationCollider, b : SimulationCollider, delta : float) ->
 	if delta_velocity == 0.0:
 		return
 	
-	#this gives us a normalized 1d direction, either 1.0 or -1.0
-	var dir : float = delta_velocity / abs(delta_velocity)
+	var result = a.shape.get_collision_info(a, b, delta)
 	
-	#time when object origins meet
-	var object_intersection : float = (a.position - b.position) / (a.velocity - b.velocity)
-	#the distance that a collision occurs between the two objects
-	var s : float = a.size + b.size
-	
-	#time when collisions
-	var plus : float = (-a.position + b.position + s) / (a.velocity - b.velocity)
-	var minus : float = -((a.position - b.position + s) / (a.velocity - b.velocity))
-	
-	var right : float = max(plus, minus)
-	var left : float = min(plus, minus)
-	
-	var collision_time : float
-	#position when collision
-	if object_intersection > 0.0:
-		collision_time = right
-		if collision_time < 0.0:
-			return
-	else:
-		collision_time = left
-	
-	#collision doesnt happen this frame
-	if collision_time > delta:
+	if result.size() == 0:
 		return
-	
-	#this can send the object back in time per se, 
-	var collision_position : float = a.position + a.velocity * collision_time
-	
 	
 	#calculate bounce
 	var average_bounce : float = (a.bounce + b.bounce) / 2.0
 	var final_velocity : float
+	
+	#if type == immovable
 	if b.get_type() == "SimulationStaticBody":
-		final_velocity = lerp(b.velocity, -a.velocity, average_bounce)
+		final_velocity = lerp(b.velocity, b.velocity + delta_velocity, average_bounce)
 	else:
 		var kinetic : float = (a.mass * a.velocity + b.mass * b.velocity) / (a.mass + b.mass)
 		var elastic : float = ((a.mass - b.mass) * a.velocity + 2 * b.mass * b.velocity) / (a.mass + b.mass)
 		final_velocity = lerp(kinetic, elastic, average_bounce)
 	
-	var final_position : float = collision_position + final_velocity * (delta - collision_time)
+	var final_position : float = result["position"] + final_velocity * (delta - result["time"])
 	
 	emit_signal("on_collided", abs(final_velocity - velocity) * mass)
 	

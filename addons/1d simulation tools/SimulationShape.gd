@@ -1,16 +1,18 @@
-extends Node
+extends Spatial
+class_name SimulationShape
 
+enum shapes {NA, SEGMENT_SHAPE}
+var shape : int = 0
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+func get_type() -> String:
+	return "SimulationShape"
 
+func get_collision_info(a, b, delta) -> Dictionary:
+	match b.shape.shape:
+		shapes.SEGMENT_SHAPE:
+			return segment_collision(a, b, delta)
+	
+	return {}
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func segment_collision(a, b, delta) -> Dictionary:
+	return {}

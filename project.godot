@@ -34,6 +34,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/1d simulation tools/SimulationRigidBody.gd"
 }, {
+"base": "SimulationShape",
+"class": "SimulationSegmentShape",
+"language": "GDScript",
+"path": "res://SimulationSegmentShape.gd"
+}, {
+"base": "Spatial",
+"class": "SimulationShape",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/SimulationShape.gd"
+}, {
 "base": "Spatial",
 "class": "SimulationSpace",
 "language": "GDScript",
@@ -55,6 +65,8 @@ _global_script_class_icons={
 "SimulationKinematicBody": "",
 "SimulationObject": "",
 "SimulationRigidBody": "",
+"SimulationSegmentShape": "",
+"SimulationShape": "",
 "SimulationSpace": "",
 "SimulationStaticBody": "",
 "Simulator": ""
@@ -63,8 +75,13 @@ _global_script_class_icons={
 [application]
 
 config/name="1D Simulator"
+run/main_scene="res://world.tscn"
 config/icon="res://icon.png"
 
 [editor_plugins]
 
 enabled=PoolStringArray( "1d simulation tools" )
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"
