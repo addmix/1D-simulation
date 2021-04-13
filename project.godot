@@ -64,3 +64,7 @@ _global_script_class_icons={
 
 config/name="1D Simulator"
 config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "1d simulation tools" )
