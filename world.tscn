@@ -1,9 +1,15 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Simulation.gd" type="Script" id=1]
-[ext_resource path="res://SimulationSpace.gd" type="Script" id=2]
-[ext_resource path="res://SimulationRigidBody.gd" type="Script" id=3]
-[ext_resource path="res://CSGBox.gd" type="Script" id=4]
+[ext_resource path="res://addons/1d simulation tools/Simulation.gd" type="Script" id=1]
+[ext_resource path="res://addons/1d simulation tools/SimulationSpace.gd" type="Script" id=2]
+[ext_resource path="res://addons/1d simulation tools/SimulationRigidBody.gd" type="Script" id=3]
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends CSGBox
+
+func _process(_delta : float) -> void:
+	transform.origin.x = get_parent().position
+"
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0.541176, 0.0470588, 0.0470588, 1 )
@@ -27,7 +33,7 @@ bounce = 1.0
 width = 0.2
 height = 0.2
 depth = 0.2
-script = ExtResource( 4 )
+script = SubResource( 2 )
 
 [node name="SimulationRigidBody2" type="Spatial" parent="Gun/SimulationSpace"]
 script = ExtResource( 3 )
@@ -41,7 +47,7 @@ material_override = SubResource( 1 )
 width = 0.2
 height = 0.2
 depth = 0.2
-script = ExtResource( 4 )
+script = SubResource( 2 )
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.82484 )

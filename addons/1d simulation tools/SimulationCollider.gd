@@ -6,7 +6,6 @@ signal on_collided
 #objects we will check collision on, in nodepaths
 var to_collide : Array = []
 
-var collision_time : float = 0.0
 export var friction : float = 0.0 #could be called damping
 export var bounce : float = 0.0
 export var mass : float = 1.0

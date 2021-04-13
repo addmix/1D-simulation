@@ -12,42 +12,42 @@ _global_script_classes=[ {
 "base": "SimulationObject",
 "class": "SimulationArea",
 "language": "GDScript",
-"path": "res://SimulationArea.gd"
+"path": "res://addons/1d simulation tools/SimulationArea.gd"
 }, {
 "base": "SimulationObject",
 "class": "SimulationCollider",
 "language": "GDScript",
-"path": "res://SimulationCollider.gd"
+"path": "res://addons/1d simulation tools/SimulationCollider.gd"
 }, {
 "base": "SimulationCollider",
 "class": "SimulationKinematicBody",
 "language": "GDScript",
-"path": "res://SimulationKinematicBody.gd"
+"path": "res://addons/1d simulation tools/SimulationKinematicBody.gd"
 }, {
 "base": "Spatial",
 "class": "SimulationObject",
 "language": "GDScript",
-"path": "res://SimulationObject.gd"
+"path": "res://addons/1d simulation tools/SimulationObject.gd"
 }, {
 "base": "SimulationCollider",
 "class": "SimulationRigidBody",
 "language": "GDScript",
-"path": "res://SimulationRigidBody.gd"
+"path": "res://addons/1d simulation tools/SimulationRigidBody.gd"
 }, {
 "base": "Spatial",
 "class": "SimulationSpace",
 "language": "GDScript",
-"path": "res://SimulationSpace.gd"
+"path": "res://addons/1d simulation tools/SimulationSpace.gd"
 }, {
 "base": "SimulationCollider",
 "class": "SimulationStaticBody",
 "language": "GDScript",
-"path": "res://SimulationStaticBody.gd"
+"path": "res://addons/1d simulation tools/SimulationStaticBody.gd"
 }, {
 "base": "Spatial",
 "class": "Simulator",
 "language": "GDScript",
-"path": "res://Simulation.gd"
+"path": "res://addons/1d simulation tools/Simulation.gd"
 } ]
 _global_script_class_icons={
 "SimulationArea": "",
@@ -63,9 +63,4 @@ _global_script_class_icons={
 [application]
 
 config/name="1D Simulator"
-run/main_scene="res://world.tscn"
 config/icon="res://icon.png"
-
-[rendering]
-
-environment/default_environment="res://default_env.tres"
