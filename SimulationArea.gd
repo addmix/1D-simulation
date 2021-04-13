@@ -1,0 +1,2 @@
+extends SimulationObject
+class_name SimulationArea
