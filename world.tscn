@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://addons/1d simulation tools/Simulation.gd" type="Script" id=1]
-[ext_resource path="res://addons/1d simulation tools/SimulationRigidBody.gd" type="Script" id=2]
+[ext_resource path="res://addons/1d simulation tools/core/Simulation.gd" type="Script" id=1]
+[ext_resource path="res://addons/1d simulation tools/physics/SimulationRigidBody.gd" type="Script" id=2]
 [ext_resource path="res://debug cube.gd" type="Script" id=3]
-[ext_resource path="res://addons/1d simulation tools/SimulationSpace.gd" type="Script" id=4]
-[ext_resource path="res://SimulationSegmentShape.gd" type="Script" id=5]
+[ext_resource path="res://addons/1d simulation tools/core/SimulationSpace.gd" type="Script" id=4]
+[ext_resource path="res://addons/1d simulation tools/shapes/SimulationSegmentShape.gd" type="Script" id=5]
 
 [node name="world" type="Spatial"]
 

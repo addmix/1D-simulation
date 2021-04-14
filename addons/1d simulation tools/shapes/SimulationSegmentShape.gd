@@ -6,7 +6,7 @@ export var size : float = 1.0
 func _ready() -> void:
 	shape = shapes.SEGMENT_SHAPE
 
-func segment_collision(a, b, delta) -> Dictionary:
+func segment_collision(a, b, delta : float) -> Dictionary:
 	var s : float = size + b.shape.size
 	#time at collisions
 	var timeplus : float = (-a.position + b.position + s) / (a.velocity - b.velocity)

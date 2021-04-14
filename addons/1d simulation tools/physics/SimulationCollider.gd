@@ -19,6 +19,11 @@ func _ready() -> void:
 		if child.get_type() == "SimulationShape":
 			shape = child
 			break
+	
+	if shape == null:
+		var instance := SimulationShape.new()
+		add_child(instance)
+		shape = instance
 
 func _step(delta : float) -> void:
 	if !is_inside_tree():
@@ -52,6 +57,7 @@ func test_move(a : SimulationCollider, b : SimulationCollider, delta : float) ->
 	
 	var result = a.shape.get_collision_info(a, b, delta)
 	
+	#no collision
 	if result.size() == 0:
 		return
 	
@@ -69,12 +75,17 @@ func test_move(a : SimulationCollider, b : SimulationCollider, delta : float) ->
 	
 	var final_position : float = result["position"] + final_velocity * (delta - result["time"])
 	
-	emit_signal("on_collided", abs(final_velocity - velocity) * mass)
 	
-	print(a, to_collide)
+	emit_signal("on_collided", abs(final_velocity - velocity) * mass)
 	
 	a.set_end_velocity(final_velocity)
 	a.set_end_position(final_position)
 
 func on_collided(force : float, collider : SimulationCollider) -> void:
 	emit_signal("on_collided", force, collider)
+
+func apply_force(force : float) -> void:
+	pass
+
+func accelerate(speed : float) -> void:
+	pass
