@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 class_name SimulationConstraint
 
 export var node_a : NodePath setget set_node_a

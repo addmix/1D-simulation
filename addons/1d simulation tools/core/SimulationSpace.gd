@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 class_name SimulationSpace
 
 var gravity := Vector3(0, -9.8, 0)
@@ -64,9 +64,6 @@ func _step(delta : float) -> void:
 	for obj in objects:
 		obj._step(delta)
 	
-	var dot : float = get_global_transform().basis.x.dot(gravity.normalized()) * gravity.length() * delta
-	for rigid in rigidbodies:
-		rigid.accelerate(dot)
 
 func _post_step() -> void:
 	for obj in objects:

@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 class_name SimulationObject
 
 export var position : float = 0.0

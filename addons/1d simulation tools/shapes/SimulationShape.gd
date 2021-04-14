@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 class_name SimulationShape
 
 enum shapes {NA, SEGMENT_SHAPE, BOUND_SHAPE}

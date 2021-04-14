@@ -67,7 +67,7 @@ func test_move(a : SimulationCollider, b : SimulationCollider, delta : float) ->
 	
 	#if type == immovable
 	if b.get_type() == "SimulationStaticBody":
-		final_velocity = lerp(b.velocity, b.velocity + delta_velocity, average_bounce)
+		final_velocity = lerp(b.velocity, b.velocity - delta_velocity, average_bounce)
 	else:
 		var kinetic : float = (a.mass * a.velocity + b.mass * b.velocity) / (a.mass + b.mass)
 		var elastic : float = ((a.mass - b.mass) * a.velocity + 2 * b.mass * b.velocity) / (a.mass + b.mass)
