@@ -75,7 +75,6 @@ func test_move(a : SimulationCollider, b : SimulationCollider, delta : float) ->
 	
 	var final_position : float = result["position"] + final_velocity * (delta - result["time"])
 	
-	
 	emit_signal("on_collided", abs(final_velocity - velocity) * mass)
 	
 	a.set_end_velocity(final_velocity)
