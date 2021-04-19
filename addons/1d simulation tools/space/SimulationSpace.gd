@@ -14,6 +14,9 @@ var staticbodies := []
 
 var constraints := []
 
+func get_type() -> String:
+	return "SimulationSpace"
+
 func _ready() -> void:
 	if Engine.editor_hint:
 		return
@@ -41,9 +44,9 @@ func _ready() -> void:
 	
 	#tells objects what they need to collide with
 	for i in colliders.size():
-		if colliders[i] is SimulationStaticBody:
+		if colliders[i].get_type() == "SimulationStaticBody":
 			continue
-		elif colliders[i] is SimulationRigidBody:
+		elif colliders[i].get_type() == "SimulationRigidBody":
 			
 			if i > 0:
 				colliders[i].to_collide.append(colliders[i - 1].get_path())
@@ -91,10 +94,12 @@ func _post_step() -> void:
 		obj._post_step()
 
 func create_linear() -> void:
-	segments.append(SimulationLinearSpace.new(1.0))
+	pass
+#	segments.append(SimulationLinearSpace.new(1.0))
 
 func create_radial() -> void:
-	segments.append(SimulationRadialSpace.new())
+	pass
+#	segments.append(SimulationRadialSpace.new())
 
 func get_end_transform() -> Transform:
 	return get_global_transform()
@@ -116,3 +121,9 @@ func get_transform_at_pos(pos : float) -> Transform:
 	else:
 		return Transform()
 
+func _exit_tree() -> void:
+	for object in objects:
+		if object:
+			object.queue_free()
+	
+	queue_free()

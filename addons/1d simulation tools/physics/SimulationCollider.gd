@@ -11,7 +11,7 @@ export var space_tangaent_friction : float = 0.0 #friction when an object is pul
 export var bounce : float = 0.0
 export var mass : float = 1.0
 
-var accel_buffer_mutex := Mutex.new()
+onready var accel_buffer_mutex := Mutex.new()
 var accel_buffer : float = 0.0
 
 var shape : SimulationShape
@@ -27,11 +27,6 @@ func _ready() -> void:
 			"SimulationShape":
 				shape = child
 	
-	#prevent from having no shape
-	if shape == null:
-		var instance := SimulationShape.new()
-		add_child(instance)
-		shape = instance
 
 func _step(delta : float) -> void:
 	if !is_inside_tree():
@@ -49,6 +44,8 @@ func _step(delta : float) -> void:
 	
 	#apply friction here
 	#friction force
+	if abs(end_velocity) * friction * delta == 0:
+		return
 	var force : float = end_velocity / abs(end_velocity) * friction * delta
 	var new_velocity : float = end_velocity - force
 	var changed_direction : bool = (new_velocity > 0.0 and end_velocity <= 0.0) or (new_velocity <= 0.0 and end_velocity > 0.0)
@@ -99,3 +96,7 @@ func accelerate(speed : float) -> void:
 
 func apply_accel_buffer() -> void:
 	pass
+
+func _exit_tree() -> void:
+	if shape:
+		shape.queue_free()

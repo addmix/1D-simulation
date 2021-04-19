@@ -79,7 +79,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/1d simulation tools/space/SimulationSpace.gd"
 }, {
-"base": "Node",
+"base": "Object",
 "class": "SimulationSpaceSegment",
 "language": "GDScript",
 "path": "res://addons/1d simulation tools/space/segments/SimulationSpaceSegment.gd"
@@ -129,6 +129,10 @@ config/icon="res://icon.png"
 [display]
 
 window/vsync/use_vsync=false
+
+[editor]
+
+main_run_args="--verbose"
 
 [editor_plugins]
 

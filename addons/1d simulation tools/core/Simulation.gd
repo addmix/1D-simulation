@@ -1,5 +1,4 @@
 extends Node
-
 class_name Simulator
 
 export var fps := 120
@@ -21,10 +20,10 @@ var spaces := []
 func _ready() -> void:
 	var children : Array = get_children()
 	for child in children:
-		if child is SimulationSpace:
+		if child.get_type() == "SimulationSpace":
 			spaces.append(child)
 	
-	var _err = thread.start(self, "run", null, Thread.PRIORITY_HIGH)
+#	var _err = thread.start(self, "run", null, Thread.PRIORITY_HIGH)
 
 func run(_args) -> void:
 	time = OS.get_ticks_usec()
@@ -63,3 +62,5 @@ func _exit_tree() -> void:
 	if thread.is_active():
 		stop = true
 		thread.wait_to_finish()
+	
+	spaces = []

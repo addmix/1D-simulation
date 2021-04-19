@@ -28,10 +28,6 @@ func _pre_step() -> void:
 func _step(_delta : float) -> void:
 	pass
 
-func _solve_constraints(delta : float) -> void:
-	for constraint in constraints:
-		constraint._solve(delta)
-
 func _post_step() -> void:
 	position = end_position
 	velocity = end_velocity

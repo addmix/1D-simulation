@@ -21,6 +21,9 @@ func _enter_tree() -> void:
 #	connect("space_updated", self, "on_space_updated")
 	connect("space_updated", space_editor_plugin, "on_space_updated")
 
+func _exit_tree() -> void:
+	pass
+
 func on_selection_changed() -> void:
 	var selected = editor_selection.get_selected_nodes()
 	
