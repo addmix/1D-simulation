@@ -16,6 +16,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.82484 )
 
 [node name="Simulator" type="Spatial" parent="."]
 script = ExtResource( 1 )
+fps = 240
 
 [node name="SimulationSpace" type="Spatial" parent="Simulator"]
 script = ExtResource( 4 )
@@ -24,13 +25,12 @@ script = ExtResource( 4 )
 script = ExtResource( 8 )
 node_a = NodePath("../Rigid")
 node_b = NodePath("../Static")
+stiffness = 200.0
 
 [node name="Rigid" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 2 )
 position = -2.0
 velocity = -2.0
-bounce = 0.1
-mass = 1.0
 
 [node name="SimulationSegmentShape2" type="Node" parent="Simulator/SimulationSpace/Rigid"]
 script = ExtResource( 5 )
@@ -45,7 +45,6 @@ _depth = 0.1
 
 [node name="Static" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 7 )
-bounce = 0.1
 
 [node name="SimulationBoundsShape" type="Node" parent="Simulator/SimulationSpace/Static"]
 script = ExtResource( 6 )

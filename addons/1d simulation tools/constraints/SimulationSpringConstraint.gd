@@ -1,7 +1,7 @@
 extends SimulationConstraint
 class_name SimulationSpringConstraint
 
-export var stiffness : float = 10.0
+export var stiffness : float = 1.0
 export var pre_tension : float = 1.0
 
 func get_type() -> String:

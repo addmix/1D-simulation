@@ -120,10 +120,15 @@ config/name="1D Simulator"
 run/main_scene="res://world.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+window/vsync/use_vsync=false
+
 [editor_plugins]
 
 enabled=PoolStringArray( "1d simulation tools" )
 
 [rendering]
 
+threads/thread_model=2
 environment/default_environment="res://default_env.tres"

@@ -37,18 +37,18 @@ func _ready() -> void:
 			"SimulationSpringConstraint":
 				constraints.append(child)
 	
-	var ordered : Array = order_array(colliders, "position")
+	colliders = order_array(colliders, "position")
 	
 	#tells objects what they need to collide with
-	for i in ordered.size():
-		if ordered[i] is SimulationStaticBody:
+	for i in colliders.size():
+		if colliders[i] is SimulationStaticBody:
 			continue
-		elif ordered[i] is SimulationRigidBody:
+		elif colliders[i] is SimulationRigidBody:
 			
 			if i > 0:
-				ordered[i].to_collide.append(ordered[i - 1].get_path())
-			if !i+1 >= ordered.size():
-				ordered[i].to_collide.append(ordered[i + 1].get_path())
+				colliders[i].to_collide.append(colliders[i - 1].get_path())
+			if !i+1 >= colliders.size():
+				colliders[i].to_collide.append(colliders[i + 1].get_path())
 
 #only works for floats and ints
 func order_array(arr : Array, attribute : String) -> Array:
@@ -76,9 +76,11 @@ func _step(delta : float) -> void:
 	if !is_inside_tree():
 		return
 	
-	#check collisions here
 	for obj in objects:
 		obj._step(delta)
+	
+	for collider in colliders:
+		collider.apply_accel_buffer()
 
 func _solve_constraints(delta : float) -> void:
 	for constraint in constraints:

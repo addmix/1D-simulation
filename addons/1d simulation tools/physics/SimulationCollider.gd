@@ -11,6 +11,9 @@ export var space_tangaent_friction : float = 0.0 #friction when an object is pul
 export var bounce : float = 0.0
 export var mass : float = 1.0
 
+var accel_buffer_mutex := Mutex.new()
+var accel_buffer : float = 0.0
+
 var shape : SimulationShape
 
 #overrides SimulationObject ready func
@@ -92,4 +95,7 @@ func apply_force(force : float) -> void:
 	pass
 
 func accelerate(speed : float) -> void:
+	pass
+
+func apply_accel_buffer() -> void:
 	pass
