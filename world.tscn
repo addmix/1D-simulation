@@ -1,15 +1,12 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://addons/1d simulation tools/core/Simulation.gd" type="Script" id=1]
 [ext_resource path="res://addons/1d simulation tools/physics/SimulationRigidBody.gd" type="Script" id=2]
 [ext_resource path="res://debug cube.gd" type="Script" id=3]
-[ext_resource path="res://addons/1d simulation tools/core/SimulationSpace.gd" type="Script" id=4]
+[ext_resource path="res://addons/1d simulation tools/space/SimulationSpace.gd" type="Script" id=4]
 [ext_resource path="res://addons/1d simulation tools/shapes/SimulationSegmentShape.gd" type="Script" id=5]
 [ext_resource path="res://addons/1d simulation tools/shapes/SimulationBoundShape.gd" type="Script" id=6]
 [ext_resource path="res://addons/1d simulation tools/physics/SimulationStaticBody.gd" type="Script" id=7]
-
-[sub_resource type="SpatialMaterial" id=1]
-albedo_color = Color( 1, 0.0156863, 0.0156863, 1 )
 
 [node name="world" type="Spatial"]
 
@@ -22,32 +19,33 @@ script = ExtResource( 1 )
 [node name="SimulationSpace" type="Spatial" parent="Simulator"]
 script = ExtResource( 4 )
 
-[node name="SimulationRigidBody2" type="Spatial" parent="Simulator/SimulationSpace"]
+[node name="SimulationRigidBody2" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 2 )
 velocity = 2.0
 bounce = 1.0
 
-[node name="CSGBox" type="CSGBox" parent="Simulator/SimulationSpace/SimulationRigidBody2"]
-material_override = SubResource( 1 )
-width = 0.2
-script = ExtResource( 3 )
-_height = 0.1
-_depth = 0.1
-
-[node name="SimulationSegmentShape2" type="Spatial" parent="Simulator/SimulationSpace/SimulationRigidBody2"]
+[node name="SimulationSegmentShape2" type="Node" parent="Simulator/SimulationSpace/SimulationRigidBody2"]
 script = ExtResource( 5 )
 size = 0.1
 
+[node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/SimulationRigidBody2"]
+visible = false
+width = 0.1
+height = 0.1
+depth = 0.1
+script = ExtResource( 3 )
+_depth = 0.1
+
 [node name="SimulationStaticBody" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 7 )
-position = 1.0
-bounce = 1.0
-
-[node name="CSGBox2" type="CSGBox" parent="Simulator/SimulationSpace/SimulationStaticBody"]
-width = 0.2
-script = ExtResource( 3 )
-_height = 0.1
-_depth = 0.1
 
 [node name="SimulationBoundsShape" type="Node" parent="Simulator/SimulationSpace/SimulationStaticBody"]
 script = ExtResource( 6 )
+
+[node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/SimulationStaticBody"]
+visible = false
+width = 0.1
+height = 0.1
+depth = 0.1
+script = ExtResource( 3 )
+_depth = 0.1

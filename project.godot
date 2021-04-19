@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "CSGBox",
+"class": "DebugViewer",
+"language": "GDScript",
+"path": "res://debug cube.gd"
+}, {
 "base": "SimulationObject",
 "class": "SimulationArea",
 "language": "GDScript",
@@ -34,10 +39,20 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/1d simulation tools/physics/SimulationKinematicBody.gd"
 }, {
+"base": "SimulationSpaceSegment",
+"class": "SimulationLinearSpace",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/space/segments/SimulationLinearSpace.gd"
+}, {
 "base": "Node",
 "class": "SimulationObject",
 "language": "GDScript",
 "path": "res://addons/1d simulation tools/nodes/SimulationObject.gd"
+}, {
+"base": "SimulationSpaceSegment",
+"class": "SimulationRadialSpace",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/space/segments/SimulationRadialSpace.gd"
 }, {
 "base": "SimulationCollider",
 "class": "SimulationRigidBody",
@@ -54,10 +69,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/1d simulation tools/shapes/SimulationShape.gd"
 }, {
-"base": "Node",
+"base": "Spatial",
 "class": "SimulationSpace",
 "language": "GDScript",
-"path": "res://addons/1d simulation tools/core/SimulationSpace.gd"
+"path": "res://addons/1d simulation tools/space/SimulationSpace.gd"
+}, {
+"base": "Node",
+"class": "SimulationSpaceSegment",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/space/segments/SimulationSpaceSegment.gd"
 }, {
 "base": "SimulationConstraint",
 "class": "SimulationSpringConstraint",
@@ -75,16 +95,20 @@ _global_script_classes=[ {
 "path": "res://addons/1d simulation tools/core/Simulation.gd"
 } ]
 _global_script_class_icons={
+"DebugViewer": "",
 "SimulationArea": "",
 "SimulationBoundsShape": "",
 "SimulationCollider": "",
 "SimulationConstraint": "",
 "SimulationKinematicBody": "",
+"SimulationLinearSpace": "",
 "SimulationObject": "",
+"SimulationRadialSpace": "",
 "SimulationRigidBody": "",
 "SimulationSegmentShape": "",
 "SimulationShape": "",
 "SimulationSpace": "",
+"SimulationSpaceSegment": "",
 "SimulationSpringConstraint": "",
 "SimulationStaticBody": "",
 "Simulator": ""

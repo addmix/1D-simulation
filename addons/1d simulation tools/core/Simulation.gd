@@ -52,6 +52,10 @@ func _step(delta: float) -> void:
 	for space in spaces:
 		space._step(delta)
 
+func _solve_constraints(delta : float) -> void:
+	for space in spaces:
+		space._solve_constraints(delta)
+
 func _post_step() -> void:
 	for space in spaces:
 		space._post_step()

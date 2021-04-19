@@ -1,4 +1,5 @@
 extends CSGBox
+class_name DebugViewer
 
 export var _height : float = 1.0
 export var _depth : float = 1.0

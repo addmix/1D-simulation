@@ -7,5 +7,5 @@ var damping : float = 0.1
 var minimum_length : float = 0.0
 var maximum_length : float = 0.0
 
-func solve_constraints(delta : float) -> void:
+func _solve(delta : float) -> void:
 	pass

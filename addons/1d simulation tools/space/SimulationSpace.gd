@@ -1,5 +1,8 @@
-extends Node
+tool
+extends Spatial
 class_name SimulationSpace
+
+export var segments : Array = []
 
 var gravity := Vector3(0, -9.8, 0)
 
@@ -10,16 +13,25 @@ var rigidbodies := []
 var staticbodies := []
 
 func _ready() -> void:
+	if Engine.editor_hint:
+		return
+	
 	var children : Array = get_children()
 	for child in children:
-		if child is SimulationObject:
-			objects.append(child)
-			if child is SimulationCollider:
+		match child.get_type():
+			"SimulationObject":
+				objects.append(child)
+			"SimulationCollider":
+				objects.append(child)
 				colliders.append(child)
-				if child is SimulationRigidBody:
-					rigidbodies.append(child)
-				elif child is SimulationStaticBody:
-					staticbodies.append(child)
+			"SimulationStaticBody":
+				objects.append(child)
+				colliders.append(child)
+				staticbodies.append(child)
+			"SimulationRigidBody":
+				objects.append(child)
+				colliders.append(child)
+				rigidbodies.append(child)
 	
 	var ordered : Array = order_array(colliders, "position")
 	
@@ -63,8 +75,20 @@ func _step(delta : float) -> void:
 	#check collisions here
 	for obj in objects:
 		obj._step(delta)
-	
+
+func _solve_constraints(delta : float) -> void:
+	for obj in objects:
+		obj._solve_constraints(delta)
 
 func _post_step() -> void:
 	for obj in objects:
 		obj._post_step()
+
+func create_linear() -> void:
+	segments.append(SimulationLinearSpace.new(1.0))
+
+func create_radial() -> void:
+	segments.append(SimulationRadialSpace.new())
+
+func get_end_transform() -> Transform:
+	return get_global_transform()

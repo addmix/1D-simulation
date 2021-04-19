@@ -7,19 +7,24 @@ signal on_collided
 var to_collide : Array = []
 
 export var friction : float = 0.0 #could be called damping
+export var space_tangaent_friction : float = 0.0 #friction when an object is pulled by a constraint in an axis not aligned with the current space
 export var bounce : float = 0.0
 export var mass : float = 1.0
 
 var shape : SimulationShape
 
+#overrides SimulationObject ready func
 func _ready() -> void:
 	var children : Array = get_children()
 	
 	for child in children:
-		if child.get_type() == "SimulationShape":
-			shape = child
-			break
+		match child.get_type():
+			"SimulationConstraint":
+				constraints.append(child)
+			"SimulationShape":
+				shape = child
 	
+	#prevent from having no shape
 	if shape == null:
 		var instance := SimulationShape.new()
 		add_child(instance)

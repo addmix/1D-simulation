@@ -13,5 +13,7 @@ func set_node_b(node : NodePath) -> void:
 var a : SimulationCollider
 var b : SimulationCollider
 
-func solve_constraints(delta : float) -> void:
+export var use_3d_space : bool = false
+
+func _solve(delta : float) -> void:
 	pass
