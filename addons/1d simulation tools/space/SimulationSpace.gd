@@ -92,3 +92,27 @@ func create_radial() -> void:
 
 func get_end_transform() -> Transform:
 	return get_global_transform()
+
+func get_transform_at_pos(pos : float) -> Transform:
+	var sofar : float = 0.0
+	for segment in segments:
+		sofar += segment.length
+		#we have found the correct segment
+		if sofar >= pos:
+			#get 0-1 from size
+			var distance_past_segment : float = pos - (sofar - segment.length)
+			return segment.get_transform(distance_past_segment / segment.length)
+	
+	if pos <= 0.0:
+		return Transform()
+	elif pos >= sofar:
+		return segments[-1].get_end_transform()
+	else:
+		return Transform()
+
+
+
+
+
+
+

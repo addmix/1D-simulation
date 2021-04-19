@@ -1,6 +1,8 @@
 extends SimulationSpaceSegment
 class_name SimulationRadialSpace
 
+var resolution : float = 10.0
+
 export var length : float = 1.0 setget set_length
 func set_length(i : float) -> void:
 	length = i
@@ -38,9 +40,9 @@ func get_end_transform() -> Transform:
 func get_points() -> PoolVector3Array:
 	var points := PoolVector3Array()
 	points.append(global_transform.origin)
-	for i in int(arc_angle / 5.0):
-		points.append(get_transform(float(i) / int(arc_angle / 5.0)).origin)
-		points.append(get_transform(float(i) / int(arc_angle / 5.0)).origin)
+	for i in int(arc_angle / resolution):
+		points.append(get_transform(float(i) / int(arc_angle / resolution)).origin)
+		points.append(get_transform(float(i) / int(arc_angle / resolution)).origin)
 	points.append(get_end_transform().origin)
 #	points.remove(0)
 #	points.remove(points.size() - 1)
