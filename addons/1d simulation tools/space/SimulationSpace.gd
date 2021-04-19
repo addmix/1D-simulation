@@ -12,6 +12,8 @@ var colliders := []
 var rigidbodies := []
 var staticbodies := []
 
+var constraints := []
+
 func _ready() -> void:
 	if Engine.editor_hint:
 		return
@@ -32,6 +34,8 @@ func _ready() -> void:
 				objects.append(child)
 				colliders.append(child)
 				rigidbodies.append(child)
+			"SimulationSpringConstraint":
+				constraints.append(child)
 	
 	var ordered : Array = order_array(colliders, "position")
 	
@@ -77,8 +81,8 @@ func _step(delta : float) -> void:
 		obj._step(delta)
 
 func _solve_constraints(delta : float) -> void:
-	for obj in objects:
-		obj._solve_constraints(delta)
+	for constraint in constraints:
+		constraint._solve(delta)
 
 func _post_step() -> void:
 	for obj in objects:
@@ -109,10 +113,4 @@ func get_transform_at_pos(pos : float) -> Transform:
 		return segments[-1].get_end_transform()
 	else:
 		return Transform()
-
-
-
-
-
-
 

@@ -1,11 +1,15 @@
 extends SimulationConstraint
 class_name SimulationSpringConstraint
 
-var rest_length : float = 1.0
-var stiffness : float = 1.0
-var damping : float = 0.1
-var minimum_length : float = 0.0
-var maximum_length : float = 0.0
+export var stiffness : float = 10.0
+export var pre_tension : float = 1.0
+
+func get_type() -> String:
+	return "SimulationSpringConstraint"
 
 func _solve(delta : float) -> void:
-	pass
+	#in simulation space
+	var delta_pos : float = a.position - b.position
+	a.apply_force(stiffness * (-delta_pos + pre_tension) * delta)
+	b.apply_force(stiffness * (delta_pos + pre_tension) * delta)
+	

@@ -11,7 +11,7 @@ func _post_step() -> void:
 	._post_step()
 
 func apply_force(force : float) -> void:
-	velocity += force / mass
+	end_velocity += force / mass
 
 func accelerate(speed : float) -> void:
 	end_velocity += speed
