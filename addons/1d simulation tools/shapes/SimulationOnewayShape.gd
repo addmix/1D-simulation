@@ -2,24 +2,28 @@ extends SimulationShape
 class_name SimulationOnewayShape
 
 #true = right flase = left
+export var size : float = 1.0
 export var direction : bool = true
 
 func _ready() -> void:
 	shape = shapes.BOUND_SHAPE
 
 func segment_collision(a, b, delta : float) -> Dictionary:
+	return {}
+
+func bound_collision(a, b, delta : float) -> Dictionary:
 	#time at collisions
-	var timeplus : float = (-a.position + b.position + b.shape.size) / (a.velocity - b.velocity)
-	var timeminus : float = -((a.position - b.position - b.shape.size) / (a.velocity - b.velocity))
+	var timeplus : float = (-a.position + b.position + size) / (a.velocity - b.velocity)
+	var timeminus : float = -((a.position - b.position + size) / (a.velocity - b.velocity))
 	#position at collisions
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
 	
 	var collision_time : float
 	var collision_position : float
-	var collision_normal : float = float(!direction) - float(direction)
+	var collision_normal : float = float(!b.shape.direction) - float(b.shape.direction)
 	
-	if direction: #right wall
+	if b.shape.direction: #right wall
 		collision_position = min(posplus, posminus)
 	else: #left wall
 		collision_position = max(posplus, posminus)
@@ -31,19 +35,20 @@ func segment_collision(a, b, delta : float) -> Dictionary:
 	else:
 		collision_time = timeminus
 	
-	if direction:#right wall
-		if b.position + b.shape.size > a.position:
+	#this teleports objects out of each other
+	if b.shape.direction:#right wall
+		if a.position + a.shape.size > b.position:
 			if b.get_type() == "SimulationStaticBody":
-				collision_position = b.position + b.shape.size
+				collision_position = b.position - size
 			else:
-				collision_position = lerp(b.position + b.shape.size, a.position, a.mass / (a.mass + b.mass))
+				collision_position = lerp(b.position - size, a.position, a.mass / (a.mass + b.mass))
 			return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 	else:#left wall
-		if b.position + b.shape.size > a.position:
+		if a.position - a.shape.size < b.position:
 			if b.get_type() == "SimulationStaticBody":
-				collision_position = b.position - b.shape.size
+				collision_position = b.position + size
 			else:
-				collision_position = lerp(b.position - b.shape.size, a.position, a.mass / (a.mass + b.mass))
+				collision_position = lerp(b.position + size, a.position, a.mass / (a.mass + b.mass))
 			return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 	
 	#collision doesnt happen this frame
@@ -52,5 +57,5 @@ func segment_collision(a, b, delta : float) -> Dictionary:
 	
 	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 
-func bound_collision(a, b, delta : float) -> Dictionary:
-	return {}
+func oneway_collision(a, b, delta : float) -> Dictionary:
+	return segment_collision(a, b, delta)

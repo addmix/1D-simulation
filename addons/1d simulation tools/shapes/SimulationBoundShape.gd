@@ -54,3 +54,6 @@ func segment_collision(a, b, delta : float) -> Dictionary:
 
 func bound_collision(a, b, delta : float) -> Dictionary:
 	return {}
+
+func oneway_collision(a, b, delta : float) -> Dictionary:
+	return segment_collision(a, b, delta)

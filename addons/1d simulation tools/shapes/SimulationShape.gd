@@ -1,7 +1,7 @@
 extends Node
 class_name SimulationShape
 
-enum shapes {NA, SEGMENT_SHAPE, BOUND_SHAPE}
+enum shapes {NA, SEGMENT_SHAPE, BOUND_SHAPE, ONEWAY_SHAPE}
 var shape : int = 0
 
 func get_type() -> String:
@@ -15,6 +15,8 @@ func get_collision_info(a, b, delta : float) -> Dictionary:
 			return segment_collision(a, b, delta)
 		shapes.BOUND_SHAPE:
 			return bound_collision(a, b, delta)
+		shapes.ONEWAY_SHAPE:
+			return oneway_collision(a, b, delta)
 		_:
 			return {}
 	
@@ -24,4 +26,7 @@ func segment_collision(a, b, delta : float) -> Dictionary:
 	return {}
 
 func bound_collision(a, b, delta : float) -> Dictionary:
+	return {}
+
+func oneway_collision(a, b, delta : float) -> Dictionary:
 	return {}

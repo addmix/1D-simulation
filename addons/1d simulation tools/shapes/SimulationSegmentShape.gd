@@ -85,3 +85,6 @@ func bound_collision(a, b, delta : float) -> Dictionary:
 		return {}
 	
 	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+
+func oneway_collision(a, b, delta : float) -> Dictionary:
+	return {}
