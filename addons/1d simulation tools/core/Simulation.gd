@@ -23,7 +23,7 @@ func _ready() -> void:
 		if child.get_type() == "SimulationSpace":
 			spaces.append(child)
 	
-#	var _err = thread.start(self, "run", null, Thread.PRIORITY_HIGH)
+	var _err = thread.start(self, "run", null, Thread.PRIORITY_HIGH)
 
 func run(_args) -> void:
 	time = OS.get_ticks_usec()

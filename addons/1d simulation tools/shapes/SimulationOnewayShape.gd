@@ -3,13 +3,31 @@ class_name SimulationOnewayShape
 
 #true = right flase = left
 export var size : float = 1.0
+export var depth : float = 1.0
+export var stiffness : float = 1.0
+export var friction : float = 0.0
 export var direction : bool = true
 
 func _ready() -> void:
-	shape = shapes.BOUND_SHAPE
+	shape = shapes.ONEWAY_SHAPE
 
 func segment_collision(a, b, delta : float) -> Dictionary:
-	return {}
+	var delta_pos : float = b.position - a.position
+	
+	#right
+	if direction:
+		if delta_pos >= a.size + b.size:
+			return segment_collision(a, b, delta)
+		else:
+			
+			return {}
+	#left side
+	else:
+		if delta_pos <= -(a.size + b.size):
+			return segment_collision(a, b, delta)
+		else:
+			
+			return {}
 
 func bound_collision(a, b, delta : float) -> Dictionary:
 	#time at collisions
@@ -58,4 +76,19 @@ func bound_collision(a, b, delta : float) -> Dictionary:
 	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 
 func oneway_collision(a, b, delta : float) -> Dictionary:
-	return segment_collision(a, b, delta)
+	var delta_pos : float = b.position - a.position
+	
+	#right
+	if direction:
+		if delta_pos >= a.size + b.size and direction != b.direction:
+			return segment_collision(a, b, delta)
+		else:
+			
+			return {}
+	#left side
+	else:
+		if delta_pos <= -(a.size + b.size) and direction != b.direction:
+			return segment_collision(a, b, delta)
+		else:
+			
+			return {}

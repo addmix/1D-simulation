@@ -130,10 +130,6 @@ config/icon="res://icon.png"
 
 window/vsync/use_vsync=false
 
-[editor]
-
-main_run_args="--verbose"
-
 [editor_plugins]
 
 enabled=PoolStringArray( "1d simulation tools" )

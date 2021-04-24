@@ -87,4 +87,20 @@ func bound_collision(a, b, delta : float) -> Dictionary:
 	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 
 func oneway_collision(a, b, delta : float) -> Dictionary:
-	return {}
+	var delta_pos : float = a.position - b.position
+	
+	if b.shape.depth <= 0.0:
+		return {}
+	
+	#right
+	if b.shape.direction:
+		if delta_pos >= a.shape.size + b.shape.size:
+			return segment_collision(a, b, delta)
+		else:
+			return {}
+	#left side
+	else:
+		if delta_pos <= -(a.shape.size + b.shape.size):
+			return segment_collision(a, b, delta)
+		else:
+			return {}

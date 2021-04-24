@@ -1,3 +1,4 @@
+tool
 extends CSGBox
 class_name DebugViewer
 
