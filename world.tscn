@@ -1,57 +1,16 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://addons/1d simulation tools/core/Simulation.gd" type="Script" id=1]
-[ext_resource path="res://addons/1d simulation tools/physics/SimulationRigidBody.gd" type="Script" id=2]
-[ext_resource path="res://debug cube.gd" type="Script" id=3]
 [ext_resource path="res://addons/1d simulation tools/space/SimulationSpace.gd" type="Script" id=4]
-[ext_resource path="res://addons/1d simulation tools/physics/SimulationStaticBody.gd" type="Script" id=5]
-[ext_resource path="res://addons/1d simulation tools/shapes/SimulationSegmentShape.gd" type="Script" id=6]
-[ext_resource path="res://addons/1d simulation tools/constraints/SimulationSpringConstraint.gd" type="Script" id=7]
-[ext_resource path="res://addons/1d simulation tools/shapes/SimulationOnewayShape.gd" type="Script" id=8]
 
 [node name="world" type="Spatial"]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8.98316 )
 
 [node name="Simulator" type="Spatial" parent="."]
 script = ExtResource( 1 )
-fps = 240
+fps = 60
 
 [node name="SimulationSpace" type="Spatial" parent="Simulator"]
 script = ExtResource( 4 )
-
-[node name="SimulationRigidBody" type="Node" parent="Simulator/SimulationSpace"]
-script = ExtResource( 2 )
-position = 3.396
-bounce = 1.0
-
-[node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/SimulationRigidBody"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.396, 0, 0 )
-width = 0.934974
-script = ExtResource( 3 )
-_height = 0.652
-
-[node name="SimulationSegmentShape" type="Node" parent="Simulator/SimulationSpace/SimulationRigidBody"]
-script = ExtResource( 6 )
-
-[node name="SimulationStaticBody2" type="Node" parent="Simulator/SimulationSpace"]
-script = ExtResource( 5 )
-
-[node name="DebugViewer2" type="CSGBox" parent="Simulator/SimulationSpace/SimulationStaticBody2"]
-width = 0.934974
-height = 3.71452
-depth = 1.0
-script = ExtResource( 3 )
-_height = 5.563
-
-[node name="SimulationOnewayShape" type="Node" parent="Simulator/SimulationSpace/SimulationStaticBody2"]
-script = ExtResource( 8 )
-direction = false
-
-[node name="SimulationSpringConstraint" type="Node" parent="Simulator/SimulationSpace"]
-script = ExtResource( 7 )
-node_a = NodePath("../SimulationRigidBody")
-node_b = NodePath("../SimulationStaticBody2")
-stiffness = 1.0
-pre_tension = 0.0

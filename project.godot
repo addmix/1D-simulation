@@ -32,7 +32,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "SimulationConstraint",
 "language": "GDScript",
-"path": "res://addons/1d simulation tools/constraints/SimulationConstraint.gd"
+"path": "res://addons/1d simulation tools/physics/constraints/SimulationConstraint.gd"
 }, {
 "base": "SimulationCollider",
 "class": "SimulationKinematicBody",
@@ -87,7 +87,7 @@ _global_script_classes=[ {
 "base": "SimulationConstraint",
 "class": "SimulationSpringConstraint",
 "language": "GDScript",
-"path": "res://addons/1d simulation tools/constraints/SimulationSpringConstraint.gd"
+"path": "res://addons/1d simulation tools/physics/constraints/SimulationSpringConstraint.gd"
 }, {
 "base": "SimulationCollider",
 "class": "SimulationStaticBody",
@@ -136,5 +136,4 @@ enabled=PoolStringArray( "1d simulation tools" )
 
 [rendering]
 
-threads/thread_model=2
 environment/default_environment="res://default_env.tres"

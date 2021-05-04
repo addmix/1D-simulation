@@ -7,10 +7,18 @@ export var direction : bool = true
 func _ready() -> void:
 	shape = shapes.BOUND_SHAPE
 
-func segment_collision(a, b, delta : float) -> Dictionary:
+func segment_collision(x) -> Dictionary:
+	var a = collider
+	var b = x.collider
+	
+	var apos : float = a.position + offset
+	var bpos : float = b.position + b.offset
+	
+	var delta_velocity : float = a.velocity - b.velocity
+	
 	#time at collisions
-	var timeplus : float = (-a.position + b.position + b.shape.size) / (a.velocity - b.velocity)
-	var timeminus : float = -((a.position - b.position - b.shape.size) / (a.velocity - b.velocity))
+	var timeplus : float = (-apos + bpos + x.size) / (delta_velocity)
+	var timeminus : float = -((apos - bpos - x.size) / (delta_velocity))
 	#position at collisions
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
@@ -31,29 +39,27 @@ func segment_collision(a, b, delta : float) -> Dictionary:
 	else:
 		collision_time = timeminus
 	
-	if direction:#right wall
-		if b.position + b.shape.size > a.position:
-			if b.get_type() == "SimulationStaticBody":
-				collision_position = b.position + b.shape.size
-			else:
-				collision_position = lerp(b.position + b.shape.size, a.position, a.mass / (a.mass + b.mass))
-			return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
-	else:#left wall
-		if b.position + b.shape.size > a.position:
-			if b.get_type() == "SimulationStaticBody":
-				collision_position = b.position - b.shape.size
-			else:
-				collision_position = lerp(b.position - b.shape.size, a.position, a.mass / (a.mass + b.mass))
-			return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	var mass_ratio : float = a.mass / (a.mass + b.mass)
 	
-	#collision doesnt happen this frame
-	if collision_time > delta or collision_time < 0.0:
+	#inside, teleport out
+	if abs(apos - bpos) < x.size:
+		if b.get_type() == "SimulationStaticBody":
+			collision_position = bpos - x.size * collision_normal
+		else:
+			collision_position = lerp(bpos - x.size * collision_normal, a.position, mass_ratio)
+		return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	
+	if delta_velocity == 0.0:
 		return {}
 	
-	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	#collision doesnt happen this frame
+	if collision_time < 0.0:
+		return {}
+	
+	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 
-func bound_collision(a, b, delta : float) -> Dictionary:
+func bound_collision(x) -> Dictionary:
 	return {}
 
-func oneway_collision(a, b, delta : float) -> Dictionary:
-	return segment_collision(a, b, delta)
+func oneway_collision(x) -> Dictionary:
+	return segment_collision(x)

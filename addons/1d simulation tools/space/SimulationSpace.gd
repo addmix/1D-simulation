@@ -6,6 +6,8 @@ export var segments : Array = []
 
 var gravity := Vector3(0, -9.8, 0)
 
+var maximum_iterations : int = 10
+
 var objects := []
 var colliders := []
 
@@ -13,6 +15,8 @@ var rigidbodies := []
 var staticbodies := []
 
 var constraints := []
+
+var recalculate_collision_groups := true
 
 func get_type() -> String:
 	return "SimulationSpace"
@@ -26,52 +30,53 @@ func _ready() -> void:
 		match child.get_type():
 			"SimulationObject":
 				objects.append(child)
+				child.space = self
 			"SimulationCollider":
 				objects.append(child)
 				colliders.append(child)
+				child.space = self
 			"SimulationStaticBody":
 				objects.append(child)
 				colliders.append(child)
 				staticbodies.append(child)
+				child.space = self
 			"SimulationRigidBody":
 				objects.append(child)
 				colliders.append(child)
 				rigidbodies.append(child)
+				child.space = self
 			"SimulationSpringConstraint":
 				constraints.append(child)
-	
-	colliders = order_array(colliders, "position")
-	
-	#tells objects what they need to collide with
-	for i in colliders.size():
-		if colliders[i].get_type() == "SimulationStaticBody":
-			continue
-		elif colliders[i].get_type() == "SimulationRigidBody":
-			
-			if i > 0:
-				colliders[i].to_collide.append(colliders[i - 1].get_path())
-			if !i+1 >= colliders.size():
-				colliders[i].to_collide.append(colliders[i + 1].get_path())
+				child.space = self
 
-#only works for floats and ints
-func order_array(arr : Array, attribute : String) -> Array:
-	var ordered_array : Array = []
+
+func _exit_tree() -> void:
+	for object in objects:
+		if object:
+			object.queue_free()
 	
-	for i in arr.size():
-		#get lowest value
-		var lowest_value : float = -INF
-		var lowest_value_index : int = 0
-		for obj in arr.size():
-			var lower : bool = arr[obj].get(attribute) <= lowest_value
-			lowest_value = float(lower) * arr[obj].get(attribute) + float(not lower) * lowest_value
-			lowest_value_index = int(lower) * obj + int(not lower) * lowest_value_index
-		
-		ordered_array.append(arr[lowest_value_index])
-		arr.remove(lowest_value_index)
-	
-	return ordered_array
+	queue_free()
 
 func _pre_step() -> void:
+	#this can be optimized a lot
+	if recalculate_collision_groups:
+		recalculate_collision_groups = false
+		#wipe collision arrays
+		for collider in colliders:
+			collider.to_collide = {}
+		
+		#redo collision arrays
+		for x in colliders:
+			for y in colliders:
+				if x == y:
+					continue
+				
+				#bitwise and
+				if x.collision_layer & y.collision_mask:
+					#using a dictionary is a quick and easy way to prevent duplicates
+					x.to_collide[y.get_instance_id()] = y
+					y.to_collide[x.get_instance_id()] = x
+	
 	for obj in objects:
 		obj._pre_step()
 
@@ -79,19 +84,28 @@ func _step(delta : float) -> void:
 	if !is_inside_tree():
 		return
 	
+	var _delta : float = delta
+	for i in maximum_iterations:
+		_delta = _solve_collisions(_delta)
+		if _delta == 0.0:
+			break
+	
+	if _delta != 0.0:
+		print("not enough iterations")
+	
 	for obj in objects:
 		obj._step(delta)
 	
 	for collider in colliders:
 		collider.apply_accel_buffer()
 
-func _solve_constraints(delta : float) -> void:
-	for constraint in constraints:
-		constraint._solve(delta)
-
 func _post_step() -> void:
 	for obj in objects:
 		obj._post_step()
+
+
+#3d representation of 1d simulation
+
 
 func create_linear() -> void:
 	pass
@@ -121,9 +135,98 @@ func get_transform_at_pos(pos : float) -> Transform:
 	else:
 		return Transform()
 
-func _exit_tree() -> void:
-	for object in objects:
-		if object:
-			object.queue_free()
+
+#physics stuff
+
+
+func _solve_collisions(delta : float) -> float:
 	
-	queue_free()
+	#get all future collisions
+	var collisions : Array = []
+	
+	for i in colliders:
+		collisions.append_array(i.get_collisions())
+	
+#	var relevant_collisions : Array = get_relevant_collisions(collisions)
+	
+	
+	var result : Array = get_first_collision(collisions)
+	
+	#when no collision happens this frame
+	if result[1] > delta:
+		for i in colliders:
+			i._sub_step(delta)
+		return 0.0
+	
+	var collision : Dictionary = collisions[result[0]]
+	#step everything
+	for i in colliders:
+		i._sub_step(collision["time"])
+	
+	#apply a and b collision
+	var a = collision["a"]
+	var b = collision["b"]
+	
+	var time_remaining : float = delta - collision["time"]
+	var average_bounce : float = (a.bounce + b.bounce) / 2.0
+	
+	apply_collision(a, b, average_bounce, time_remaining)
+	apply_collision(b, a, average_bounce, time_remaining)
+	
+#	a.position = collision["position"]
+	a.velocity = a.end_velocity
+	b.velocity = b.end_velocity
+	return time_remaining
+
+func get_first_collision(collisions : Array) -> Array:
+	#get first collision
+	#smallest time
+	var smallest : float = 10000000000.0
+	#index
+	var index : int = -1
+	
+	for i in collisions.size():
+		var time : float = collisions[i]["time"]
+		var less : bool = time < smallest
+		
+		smallest = float(less) * time + float(!less) * smallest
+		index = int(less) * i + int(!less) * index
+	
+	return [index, smallest]
+
+func get_relevant_collisions(arr : Array) -> Array:
+	#get first collision
+	#smallest time
+	var smallest : float = 10000000000.0
+	for i in arr.size():
+		var time : float = arr[i]["time"]
+		var less : bool = time < smallest
+		smallest = float(less) * time + float(!less) * smallest
+	
+	var collisions : Array = []
+	
+	for i in arr:
+		if i["time"] == smallest:
+			collisions.append(i)
+	
+	return collisions
+
+func _solve_constraints(delta : float) -> void:
+	for constraint in constraints:
+		constraint._solve(delta)
+
+func apply_collision(a, b, average_bounce, time_remaining) -> void:
+	#static body bounce
+	var static_bounce : float = lerp(b.velocity, b.velocity - (a.velocity - b.velocity), average_bounce)
+	#rigid body bounce
+	var rigid_kinetic : float = (a.mass * a.velocity + b.mass * b.velocity) / (a.mass + b.mass)
+	var rigid_elastic : float = ((a.mass - b.mass) * a.velocity + 2 * b.mass * b.velocity) / (a.mass + b.mass)
+	var rigid_bounce = lerp(rigid_kinetic, rigid_elastic, average_bounce)
+	
+	#branchless lerp
+	var final_velocity : float = lerp(rigid_bounce, static_bounce, float(b.get_type() == "SimulationStaticBody"))
+	
+	var e : bool = a.get_type() == "SimulationStaticBody"
+	
+	a.emit_signal("on_collided", b, abs(final_velocity - a.velocity) * a.mass, time_remaining)
+	a.end_velocity = float(e) * a.velocity + float(!e) * final_velocity

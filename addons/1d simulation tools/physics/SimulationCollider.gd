@@ -4,17 +4,22 @@ class_name SimulationCollider
 signal on_collided
 
 #objects we will check collision on, in nodepaths
-var to_collide : Array = []
+var to_collide : Dictionary = {}
+var collision_shapes : Array = []
+var constraints : Array = []
 
-export var friction : float = 0.0 #could be called damping
-export var space_tangaent_friction : float = 0.0 #friction when an object is pulled by a constraint in an axis not aligned with the current space
+#layers this object is in
+export(int, LAYERS_3D_PHYSICS) var collision_layer = 1 setget set_collision_layer, get_collision_layer
+#layers this object checks for collisions
+export(int, LAYERS_3D_PHYSICS) var collision_mask = 1 setget set_collision_mask, get_collision_mask
+
+export var space_tangent_friction : float = 0.0 #friction when an object is pulled by a constraint in an axis not aligned with the current space
 export var bounce : float = 0.0
 export var mass : float = 1.0
 
 onready var accel_buffer_mutex := Mutex.new()
 var accel_buffer : float = 0.0
 
-var shape : SimulationShape
 
 #overrides SimulationObject ready func
 func _ready() -> void:
@@ -25,68 +30,68 @@ func _ready() -> void:
 			"SimulationConstraint":
 				constraints.append(child)
 			"SimulationShape":
-				shape = child
-	
+				collision_shapes.append(child)
+				child.collider = self
 
-func _step(delta : float) -> void:
-	if !is_inside_tree():
-		return
-	#position
-	set_end_position(position + velocity * delta)
-	#velocity
-	set_end_velocity(velocity)
-	for collider_path in to_collide:
-		
-		
-		var collider_node = get_node(collider_path)
-		#check for collision
-		test_move(self, collider_node, delta)
-	
-	#apply friction here
-	#friction force
-	if abs(end_velocity) * friction * delta == 0:
-		return
-	var force : float = end_velocity / abs(end_velocity) * friction * delta
-	var new_velocity : float = end_velocity - force
-	var changed_direction : bool = (new_velocity > 0.0 and end_velocity <= 0.0) or (new_velocity <= 0.0 and end_velocity > 0.0)
-	end_velocity = float(!changed_direction) * new_velocity
+func set_collision_layer(layer : int) -> void:
+	collision_layer = layer
+	space.recalculate_collision_groups = true
 
-func test_move(a : SimulationCollider, b : SimulationCollider, delta : float) -> void:
-	#difference in a and b's velocity
-	#we can use this to compensate for swapped values
-	var delta_velocity : float = a.velocity - b.velocity
+func get_collision_layer() -> int:
+	return collision_layer
+
+func set_collision_mask(mask : int) -> void:
+	collision_mask = mask
+	space.recalculate_collision_groups = true
+
+func get_collision_mask() -> int:
+	return collision_mask
+
+#this could be cut in half with a proper algorithm
+func calculate_colliders() -> void:
+	to_collide = {}
 	
-	#parallel lines
-	if delta_velocity == 0.0:
-		return
+	#this can be done better with an algorithm
+	for collider in space.colliders:
+		if collision_mask & collider.collision_layer:
+			to_collide[collider.get_object_id()] = collider
+
+func get_collisions() -> Array:
+	#array of soonest collisions with every object
+	var collisions : Array = []
 	
-	var result = a.shape.get_collision_info(a, b, delta)
+	for key in to_collide.keys():
+		var collider = to_collide[key]
+		var result : Dictionary = get_object_collisions(collider)
+		if result.size() > 0:
+			collisions.append(result)
 	
-	#no collision
-	if result.size() == 0:
-		return
+	return collisions
+
+func get_object_collisions(b : SimulationCollider) -> Dictionary:
+	var collisions : Array = []
 	
-	#calculate bounce
-	var average_bounce : float = (a.bounce + b.bounce) / 2.0
-	var final_velocity : float
+	#this could be cut in half with a proper algorithm
+	for x in collision_shapes:
+		for y in b.collision_shapes:
+			var result : Dictionary = x.get_collision_info(y)
+			if result.size() > 0:
+				collisions.append(result)
 	
-	#if type == immovable
-	if b.get_type() == "SimulationStaticBody":
-		final_velocity = lerp(b.velocity, b.velocity - delta_velocity, average_bounce)
+	#return soonest collision
+	var time : float = INF
+	var index : int = -1
+	for i in collisions.size():
+		var _time : float = collisions[i]["time"]
+		var less : bool = _time < time
+		
+		time = float(less) * _time + float(!less) * time
+		index = int(less) * i + int(!less) * index
+	
+	if index != -1:
+		return collisions[index]
 	else:
-		var kinetic : float = (a.mass * a.velocity + b.mass * b.velocity) / (a.mass + b.mass)
-		var elastic : float = ((a.mass - b.mass) * a.velocity + 2 * b.mass * b.velocity) / (a.mass + b.mass)
-		final_velocity = lerp(kinetic, elastic, average_bounce)
-	
-	var final_position : float = result["position"] + final_velocity * (delta - result["time"])
-	
-	emit_signal("on_collided", abs(final_velocity - velocity) * mass)
-	
-	a.set_end_velocity(final_velocity)
-	a.set_end_position(final_position)
-
-func on_collided(force : float, collider : SimulationCollider) -> void:
-	emit_signal("on_collided", force, collider)
+		return {}
 
 func apply_force(force : float) -> void:
 	pass
@@ -96,7 +101,3 @@ func accelerate(speed : float) -> void:
 
 func apply_accel_buffer() -> void:
 	pass
-
-func _exit_tree() -> void:
-	if shape:
-		shape.queue_free()

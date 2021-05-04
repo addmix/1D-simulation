@@ -13,5 +13,4 @@ func get_type() -> String:
 	return ""
 
 func _process(_delta : float) -> void:
-#	width = get_parent().shape.size * 2
 	transform.origin.x = get_parent().position

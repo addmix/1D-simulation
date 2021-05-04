@@ -6,12 +6,24 @@ export var size : float = 1.0
 func _ready() -> void:
 	shape = shapes.SEGMENT_SHAPE
 
-func segment_collision(a, b, delta : float) -> Dictionary:
-	var s : float = size + b.shape.size
-	#time at collisions
-	var timeplus : float = (-a.position + b.position + s) / (a.velocity - b.velocity)
-	var timeminus : float = -((a.position - b.position + s) / (a.velocity - b.velocity))
-	#position at collisions
+func segment_collision(x) -> Dictionary:
+	var a = collider
+	var b = x.collider
+	
+	var s : float = size + x.size
+	
+	var apos : float = a.position + offset
+	var bpos : float = b.position + x.offset
+	var bposps : float = bpos + s
+	
+	var delta_pos : float = a.velocity - b.velocity
+	var delta_velocity : float = a.velocity - b.velocity
+	
+	#time that segment will collide
+	var timeplus : float = (-apos + bposps) / (delta_velocity)
+	var timeminus : float = -((apos - bposps) / (delta_velocity))
+	
+	#collider position when segment collides
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
 	
@@ -20,87 +32,109 @@ func segment_collision(a, b, delta : float) -> Dictionary:
 	
 	var collision_time : float
 	var collision_position : float
-	var collision_normal : float
+	var collision_normal : float = delta_pos / abs(delta_pos)
 	
+	#can be made branchless
 	#get closer point
 	if plus < minus:
 		#use plus
 		collision_position = posplus
 		collision_time = timeplus
-		collision_normal = float(posplus > posminus) + -float(posplus <= posminus)
 	else:
 		#use minus
 		collision_position = posminus
 		collision_time = timeminus
-		collision_normal = float(posminus > posplus) + -float(posminus <= posplus)
 	
-	#collision doesnt happen this frame
-	if collision_time > delta or collision_time < 0.0:
+	
+	var mass_ratio : float = a.mass / (a.mass + b.mass)
+	
+	#teleport out
+	if abs(delta_pos) <= s:
+		if b.get_type() == "SimulationStaticBody":
+			collision_position = bpos + s * collision_normal
+		else:
+			collision_position = lerp(bpos + s * collision_normal, a.position, mass_ratio)
+		return {"a" : a, "b" : b, "position" : collision_position, "time" : 0.0, "normal" : collision_normal}
+	
+	if delta_velocity == 0.0:
 		return {}
 	
-	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	#collision doesnt happen this frame
+	if collision_time <= 0.0:
+		return {}
+	
+	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 
-func bound_collision(a, b, delta : float) -> Dictionary:
-	#time at collisions
-	var timeplus : float = (-a.position + b.position + size) / (a.velocity - b.velocity)
-	var timeminus : float = -((a.position - b.position + size) / (a.velocity - b.velocity))
-	#position at collisions
+func bound_collision(x) -> Dictionary:
+	var a = collider
+	var b = x.collider
+	
+	var apos : float = a.position + offset
+	var bpos : float = b.position + b.offset
+	var bposps : float = bpos + size
+	
+	var delta_velocity : float = a.velocity - b.velocity
+	
+	#time that segment will collide
+	var timeplus : float = (-apos + bposps) / (delta_velocity)
+	var timeminus : float = -((apos - bposps) / (delta_velocity))
+	
+	#collider position when segment collides
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
 	
 	var collision_time : float
 	var collision_position : float
-	var collision_normal : float = float(!b.shape.direction) - float(b.shape.direction)
+	var collision_normal : float = float(!x.direction) - float(x.direction)
 	
+	#can be made branchless
 	if b.shape.direction: #right wall
 		collision_position = min(posplus, posminus)
 	else: #left wall
 		collision_position = max(posplus, posminus)
-		
 	
+	#can be made branchless
 	#get correct collision time
 	if collision_position == posplus:
 		collision_time = timeplus
 	else:
 		collision_time = timeminus
 	
-	#this teleports objects out of each other
-	if b.shape.direction:#right wall
-		if a.position + a.shape.size > b.position:
-			if b.get_type() == "SimulationStaticBody":
-				collision_position = b.position - size
-			else:
-				collision_position = lerp(b.position - size, a.position, a.mass / (a.mass + b.mass))
-			return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
-	else:#left wall
-		if a.position - a.shape.size < b.position:
-			if b.get_type() == "SimulationStaticBody":
-				collision_position = b.position + size
-			else:
-				collision_position = lerp(b.position + size, a.position, a.mass / (a.mass + b.mass))
-			return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	var mass_ratio : float = a.mass / (a.mass + b.mass)
 	
-	#collision doesnt happen this frame
-	if collision_time > delta or collision_time < 0.0:
+	#this teleports objects out of each other
+	
+	if abs(apos - bpos) < size:
+		if b.get_type() == "SimulationStaticBody":
+			collision_position = bpos + size * collision_normal
+		else:
+			collision_position = lerp(bpos + size * collision_normal, apos, mass_ratio)
+		return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	
+	if delta_velocity == 0.0:
 		return {}
 	
-	return {"position" : collision_position, "time" : collision_time, "normal" : collision_normal}
-
-func oneway_collision(a, b, delta : float) -> Dictionary:
-	var delta_pos : float = a.position - b.position
+	#collision doesnt happen this frame
+	if collision_time <= 0.0:
+		return {}
 	
-	if b.shape.depth <= 0.0:
+	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+
+func oneway_collision(x) -> Dictionary:
+	var delta_pos : float = collider.position - x.collider.position
+	
+	if x.depth <= 0.0:
 		return {}
 	
 	#right
-	if b.shape.direction:
-		if delta_pos >= a.shape.size + b.shape.size:
-			return segment_collision(a, b, delta)
+	if x.direction:
+		if delta_pos >= size + x.size:
+			return segment_collision(x)
 		else:
 			return {}
 	#left side
 	else:
-		if delta_pos <= -(a.shape.size + b.shape.size):
-			return segment_collision(a, b, delta)
+		if delta_pos <= -(size + x.size):
+			return segment_collision(x)
 		else:
 			return {}

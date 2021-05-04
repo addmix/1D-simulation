@@ -8,6 +8,8 @@ export var node_b : NodePath setget set_node_b
 func set_node_b(node : NodePath) -> void:
 	node_b = node
 
+var space : SimulationSpace
+
 func _ready() -> void:
 	a = get_node(node_a)
 	b = get_node(node_b)

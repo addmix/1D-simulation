@@ -1,35 +1,41 @@
 extends Node
 class_name SimulationObject
 
-var constraints : Array = []
-
 export var position : float = 0.0
-onready var end_position : float = position setget set_end_position
-func set_end_position(new_position: float) -> void:
-	end_position = new_position
+onready var end_position : float = position
+onready var cached_position : float = position
 export var velocity : float = 0.0
-onready var end_velocity : float = velocity setget set_end_velocity
-func set_end_velocity(new_velocity: float) -> void:
-	end_velocity = new_velocity
+onready var end_velocity : float = velocity
+export var friction : float = 0.0
+export var position_lock := false
+
+var space : SimulationSpace
 
 func get_type() -> String:
 	return "SimulationObject"
 
-func _ready() -> void:
-	var children : Array = get_children()
-	for child in children:
-		match child.get_type():
-			"SimulationConstraint":
-				constraints.append(child)
-
 func _pre_step() -> void:
 	pass
 
-func _step(_delta : float) -> void:
-	pass
+func _step(delta : float) -> void:
+	_solve_friction(delta)
 
 func _post_step() -> void:
-	position = end_position
-	velocity = end_velocity
+	if position_lock:
+		position = cached_position
+		velocity = 0
 
 
+#physics
+
+
+func _sub_step(delta: float) -> void:
+	position += velocity * delta
+
+func _solve_friction(delta: float) -> void:
+	if velocity * friction * delta == 0:
+		return
+	var force : float = velocity / abs(velocity) * friction * delta
+	var new_velocity : float = velocity - force
+	var changed_direction : bool = (new_velocity > 0.0 and velocity <= 0.0) or (new_velocity <= 0.0 and velocity > 0.0)
+	velocity = float(!changed_direction) * new_velocity
