@@ -18,19 +18,19 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.02917 )
 
 [node name="Simulator" type="Spatial" parent="."]
 script = ExtResource( 1 )
-fps = 60
+fps = 240
 
 [node name="SimulationSpace" type="Spatial" parent="Simulator"]
 script = ExtResource( 4 )
 
 [node name="Bolt" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 3 )
-position = -0.528
-velocity = 0.604
-bounce = 1.0
+position = -0.198
+velocity = 0.598
+mass = 0.32
 
 [node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/Bolt"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.528, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.198, 0, 0 )
 width = 0.2
 height = 1.0
 depth = 1.0
@@ -42,8 +42,11 @@ size = 0.1
 
 [node name="Sear" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 2 )
+position = 0.129
+bounce = 1.0
 
 [node name="DebugViewer2" type="CSGBox" parent="Simulator/SimulationSpace/Sear"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.129, 0, 0 )
 width = 0.2
 height = 1.0
 depth = 1.0
@@ -54,16 +57,11 @@ script = ExtResource( 8 )
 size = 0.1
 direction = false
 
-[node name="SimulationSpringConstraint" type="Node" parent="Simulator/SimulationSpace"]
-script = ExtResource( 5 )
-node_a = NodePath("../Bolt")
-node_b = NodePath("../Primer")
-stiffness = 10.0
-
 [node name="Primer" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 3 )
 position = 1.374
 position_lock = true
+bounce = 0.149
 
 [node name="DebugViewer3" type="CSGBox" parent="Simulator/SimulationSpace/Primer"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.374, 0, 0 )
@@ -74,6 +72,27 @@ script = ExtResource( 6 )
 
 [node name="SimulationBoundsShape" type="Node" parent="Simulator/SimulationSpace/Primer"]
 script = ExtResource( 10 )
+
+[node name="Recoil Spring" type="Node" parent="Simulator/SimulationSpace"]
+script = ExtResource( 5 )
+node_a = NodePath("../Bolt")
+node_b = NodePath("../Primer")
+stiffness = 255.0
+
+[node name="Buffer" type="Node" parent="Simulator/SimulationSpace"]
+script = ExtResource( 2 )
+position = -0.467
+
+[node name="SimulationBoundsShape" type="Node" parent="Simulator/SimulationSpace/Buffer"]
+script = ExtResource( 10 )
+direction = false
+
+[node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/Buffer"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.467, 0, 0 )
+width = 0.001
+height = 1.0
+depth = 1.0
+script = ExtResource( 6 )
 
 [node name="GunController" type="Node" parent="."]
 script = ExtResource( 7 )

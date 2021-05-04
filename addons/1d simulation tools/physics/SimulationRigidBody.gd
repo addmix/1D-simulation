@@ -4,6 +4,9 @@ class_name SimulationRigidBody
 func get_type() -> String:
 	return "SimulationRigidBody"
 
+func _sub_step(delta: float) -> void:
+	._sub_step(delta)
+
 func apply_force(force : float) -> void:
 	accel_buffer_mutex.lock()
 	accel_buffer += force / mass

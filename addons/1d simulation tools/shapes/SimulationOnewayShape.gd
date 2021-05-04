@@ -12,7 +12,7 @@ func _ready() -> void:
 	shape = shapes.ONEWAY_SHAPE
 
 func segment_collision(x) -> Dictionary:
-	var delta_pos : float = x.collider.position - collider.position
+	var delta_pos : float = (x.collider.position + x.offset) - (collider.position + offset)
 	
 	if depth <= 0.0:
 		return {}
@@ -40,10 +40,10 @@ func _segment_collision(x) -> Dictionary:
 	var bpos : float = b.position + x.offset
 	var bposps : float = bpos + s
 	
-	var delta_pos : float = a.velocity - b.velocity
+	var delta_pos : float = apos - bpos
 	var delta_velocity : float = a.velocity - b.velocity
 	
-	if delta_velocity == 0:
+	if delta_pos == 0.0 or delta_velocity == 0.0:
 		return {}
 	
 	#time that segment will collide
@@ -117,7 +117,7 @@ func bound_collision(x) -> Dictionary:
 	var collision_normal : float = float(!x.direction) - float(x.direction)
 	
 	#can be made branchless
-	if b.shape.direction: #right wall
+	if x.direction: #right wall
 		collision_position = min(posplus, posminus)
 	else: #left wall
 		collision_position = max(posplus, posminus)
@@ -153,7 +153,7 @@ func oneway_collision(x) -> Dictionary:
 	
 	var s : float = size + x.size
 	var apos : float = a.position + offset
-	var bpos : float = b.position + b.offset
+	var bpos : float = b.position + x.offset
 	var bposps : float = bpos + size
 	
 	var delta_pos : float = bpos - apos

@@ -90,8 +90,8 @@ func _step(delta : float) -> void:
 		if _delta == 0.0:
 			break
 	
-	if _delta != 0.0:
-		print("not enough iterations")
+#	if _delta != 0.0:
+#		print("not enough iterations")
 	
 	for obj in objects:
 		obj._step(delta)
@@ -149,7 +149,6 @@ func _solve_collisions(delta : float) -> float:
 	
 #	var relevant_collisions : Array = get_relevant_collisions(collisions)
 	
-	
 	var result : Array = get_first_collision(collisions)
 	
 	#when no collision happens this frame
@@ -171,11 +170,9 @@ func _solve_collisions(delta : float) -> float:
 	var average_bounce : float = (a.bounce + b.bounce) / 2.0
 	
 	apply_collision(a, b, average_bounce, time_remaining)
-	apply_collision(b, a, average_bounce, time_remaining)
 	
-#	a.position = collision["position"]
 	a.velocity = a.end_velocity
-	b.velocity = b.end_velocity
+	
 	return time_remaining
 
 func get_first_collision(collisions : Array) -> Array:
@@ -224,8 +221,7 @@ func apply_collision(a, b, average_bounce, time_remaining) -> void:
 	var rigid_bounce = lerp(rigid_kinetic, rigid_elastic, average_bounce)
 	
 	#branchless lerp
-	var final_velocity : float = lerp(rigid_bounce, static_bounce, float(b.get_type() == "SimulationStaticBody"))
-	
+	var final_velocity : float = lerp(rigid_bounce, static_bounce, float(b.get_type() == "SimulationStaticBody" or b.position_lock))
 	var e : bool = a.get_type() == "SimulationStaticBody"
 	
 	a.emit_signal("on_collided", b, abs(final_velocity - a.velocity) * a.mass, time_remaining)
