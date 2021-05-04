@@ -12,55 +12,45 @@ func _ready() -> void:
 	shape = shapes.ONEWAY_SHAPE
 
 func segment_collision(x) -> Dictionary:
+	var delta_pos : float = x.collider.position - collider.position
 	
+	if depth <= 0.0:
+		return {}
+	
+	#right
+	if direction:
+		if delta_pos >= size + x.size:
+			return _segment_collision(x)
+		else:
+			return {}
+	#left side
+	else:
+		if delta_pos <= -(size + x.size):
+			return _segment_collision(x)
+		else:
+			return {}
+
+func _segment_collision(x) -> Dictionary:
 	var a = collider
 	var b = x.collider
 	
 	var s : float = size + x.size
 	
 	var apos : float = a.position + offset
-	
 	var bpos : float = b.position + x.offset
-	
 	var bposps : float = bpos + s
 	
+	var delta_pos : float = a.velocity - b.velocity
 	var delta_velocity : float = a.velocity - b.velocity
-	var delta_pos : float = bpos - apos
 	
-	if delta_pos == 0.0 or delta_velocity == 0.0:
+	if delta_velocity == 0:
 		return {}
 	
-	var delta_velocity_normal : float = delta_velocity / abs(delta_velocity)
-	var delta_pos_normal : float = delta_pos / abs(delta_pos)
-	
-	var collision_normal : float = float(!direction) - float(direction)
-	
-	var convergence_check : bool = delta_velocity_normal != delta_pos_normal
-	var direction_check : bool = delta_pos_normal == collision_normal
-	var distance_check : bool = abs(delta_pos) >= s
-	
-	if convergence_check and direction_check and distance_check:
-		return _segment_collision(x)
-	
-	return {}
-
-func _segment_collision(x) -> Dictionary:
-	var a = collider
-	var b = x.collider
-	
-	var s : float = size + b.shape.size
-	
-	var apos : float = a.position + offset
-	var bpos : float = b.position + b.offset
-	var bposps : float = bpos + s
-	
-	var delta_velocity : float = a.velocity - b.velocity
-	
-	#time at collisions
+	#time that segment will collide
 	var timeplus : float = (-apos + bposps) / (delta_velocity)
 	var timeminus : float = -((apos - bposps) / (delta_velocity))
 	
-	#position at collisions
+	#collider position when segment collides
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
 	
@@ -69,7 +59,7 @@ func _segment_collision(x) -> Dictionary:
 	
 	var collision_time : float
 	var collision_position : float
-	var collision_normal : float = float(!direction) - float(direction)
+	var collision_normal : float = delta_pos / abs(delta_pos)
 	
 	#can be made branchless
 	#get closer point
@@ -82,11 +72,23 @@ func _segment_collision(x) -> Dictionary:
 		collision_position = posminus
 		collision_time = timeminus
 	
+	
+	var mass_ratio : float = a.mass / (a.mass + b.mass)
+	
+	#teleport out
+	if abs(delta_pos) <= s:
+		if b.get_type() == "SimulationStaticBody":
+			collision_position = bpos + s * collision_normal
+		else:
+			collision_position = lerp(bpos + s * collision_normal, a.position, mass_ratio)
+		return {"a" : a, "b" : b, "position" : collision_position, "time" : 0.0, "normal" : collision_normal}
+	
+	
 	#collision doesnt happen this frame
 	if collision_time <= 0.0:
 		return {}
 	
-	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : -collision_normal}
+	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 
 
 func bound_collision(x) -> Dictionary:
@@ -94,10 +96,13 @@ func bound_collision(x) -> Dictionary:
 	var b = x.collider
 	
 	var apos : float = a.position + offset
-	var bpos : float = b.position + b.offset
+	var bpos : float = b.position + x.offset
 	var bposps : float = bpos + size
 	
 	var delta_velocity : float = a.velocity - b.velocity
+	
+	if delta_velocity == 0.0:
+		return {}
 	
 	#time at collisions
 	var timeplus : float = (-apos + bposps) / (delta_velocity)
@@ -134,8 +139,7 @@ func bound_collision(x) -> Dictionary:
 			collision_position = lerp(bpos + size * collision_normal, apos, mass_ratio)
 		return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 	
-	if delta_velocity == 0.0:
-		return {}
+	
 	
 	#collision doesnt happen this frame
 	if collision_time <= 0.0:

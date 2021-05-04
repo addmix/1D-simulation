@@ -49,12 +49,12 @@ func segment_collision(x) -> Dictionary:
 	var mass_ratio : float = a.mass / (a.mass + b.mass)
 	
 	#teleport out
-	if abs(delta_pos) <= s:
-		if b.get_type() == "SimulationStaticBody":
-			collision_position = bpos + s * collision_normal
-		else:
-			collision_position = lerp(bpos + s * collision_normal, a.position, mass_ratio)
-		return {"a" : a, "b" : b, "position" : collision_position, "time" : 0.0, "normal" : collision_normal}
+#	if abs(delta_pos) <= s:
+#		if b.get_type() == "SimulationStaticBody":
+#			collision_position = bpos + s * collision_normal
+#		else:
+#			collision_position = lerp(bpos + s * collision_normal, a.position, mass_ratio)
+#		return {"a" : a, "b" : b, "position" : collision_position, "time" : 0.0, "normal" : collision_normal}
 	
 	if delta_velocity == 0.0:
 		return {}
@@ -70,10 +70,13 @@ func bound_collision(x) -> Dictionary:
 	var b = x.collider
 	
 	var apos : float = a.position + offset
-	var bpos : float = b.position + b.offset
+	var bpos : float = b.position + x.offset
 	var bposps : float = bpos + size
 	
 	var delta_velocity : float = a.velocity - b.velocity
+	
+	if delta_velocity == 0.0:
+		return {}
 	
 	#time that segment will collide
 	var timeplus : float = (-apos + bposps) / (delta_velocity)
@@ -88,7 +91,7 @@ func bound_collision(x) -> Dictionary:
 	var collision_normal : float = float(!x.direction) - float(x.direction)
 	
 	#can be made branchless
-	if b.shape.direction: #right wall
+	if x.direction: #right wall
 		collision_position = min(posplus, posminus)
 	else: #left wall
 		collision_position = max(posplus, posminus)
@@ -110,9 +113,6 @@ func bound_collision(x) -> Dictionary:
 		else:
 			collision_position = lerp(bpos + size * collision_normal, apos, mass_ratio)
 		return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
-	
-	if delta_velocity == 0.0:
-		return {}
 	
 	#collision doesnt happen this frame
 	if collision_time <= 0.0:
