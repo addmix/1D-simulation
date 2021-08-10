@@ -25,7 +25,7 @@ func _ready() -> void:
 	
 	var children : Array = get_children()
 	for child in children:
-		if(!child.has_method("get_type"):
+		if(!child.has_method("get_type")):
 			continue
 		match child.get_type():
 			"SimulationObject":
