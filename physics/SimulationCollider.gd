@@ -79,7 +79,7 @@ func get_object_collisions(b : SimulationCollider) -> Dictionary:
 				collisions.append(result)
 	
 	#return soonest collision
-	var time : float = INF
+	var time : float = 100000000.0
 	var index : int = -1
 	for i in collisions.size():
 		var _time : float = collisions[i]["time"]
