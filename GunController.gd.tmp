@@ -26,6 +26,6 @@ func _process(delta : float) -> void:
 		
 
 func on_collided(node, force : float, time : float):
-	_bolt.velocity = -50.0
+#	_bolt.velocity = -50.0
 	print(force)
 

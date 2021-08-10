@@ -6,7 +6,7 @@ export var segments : Array = []
 
 var gravity := Vector3(0, -9.8, 0)
 
-var maximum_iterations : int = 10
+var maximum_iterations : int = 25
 
 var objects := []
 var colliders := []
@@ -15,8 +15,6 @@ var rigidbodies := []
 var staticbodies := []
 
 var constraints := []
-
-var recalculate_collision_groups := true
 
 func get_type() -> String:
 	return "SimulationSpace"
@@ -58,25 +56,6 @@ func _exit_tree() -> void:
 	queue_free()
 
 func _pre_step() -> void:
-	#this can be optimized a lot
-	if recalculate_collision_groups:
-		recalculate_collision_groups = false
-		#wipe collision arrays
-		for collider in colliders:
-			collider.to_collide = {}
-		
-		#redo collision arrays
-		for x in colliders:
-			for y in colliders:
-				if x == y:
-					continue
-				
-				#bitwise and
-				if x.collision_layer & y.collision_mask:
-					#using a dictionary is a quick and easy way to prevent duplicates
-					x.to_collide[y.get_instance_id()] = y
-					y.to_collide[x.get_instance_id()] = x
-	
 	for obj in objects:
 		obj._pre_step()
 

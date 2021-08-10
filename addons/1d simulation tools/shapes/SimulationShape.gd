@@ -6,6 +6,23 @@ var shape : int = 0
 var collider : SimulationCollider
 export var offset : float = 0.0
 
+#layers this object is in
+export(int, LAYERS_3D_PHYSICS) var collision_layer = 1 setget set_collision_layer, get_collision_layer
+#layers this object checks for collisions
+export(int, LAYERS_3D_PHYSICS) var collision_mask = 1 setget set_collision_mask, get_collision_mask
+
+func set_collision_layer(layer : int) -> void:
+	collision_layer = layer
+
+func get_collision_layer() -> int:
+	return collision_layer
+
+func set_collision_mask(mask : int) -> void:
+	collision_mask = mask
+
+func get_collision_mask() -> int:
+	return collision_mask
+
 func get_type() -> String:
 	return "SimulationShape"
 
@@ -33,3 +50,14 @@ func bound_collision(b) -> Dictionary:
 
 func oneway_collision(b) -> Dictionary:
 	return {}
+
+func _pre_step() -> void:
+	for child in get_children():
+		if child.has_method("_pre_step"):
+			child._pre_step()
+
+func _step(delta : float) -> void:
+	pass
+
+func _post_step() -> void:
+	pass

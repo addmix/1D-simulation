@@ -21,7 +21,7 @@ func segment_collision(x) -> Dictionary:
 	
 	#time at collisions
 	var timeplus : float = (-apos + bpos + x.size) / (delta_velocity)
-	var timeminus : float = -((apos - bpos - x.size) / (delta_velocity))
+	var timeminus : float = -((apos - bpos + x.size) / (delta_velocity))
 	#position at collisions
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
@@ -52,10 +52,8 @@ func segment_collision(x) -> Dictionary:
 			collision_position = lerp(bpos - x.size * collision_normal, a.position, mass_ratio)
 		return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
 	
-	
-	
 	#collision doesnt happen this frame
-	if collision_time < 0.0:
+	if collision_time <= 0.0:
 		return {}
 	
 	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}

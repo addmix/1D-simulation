@@ -15,7 +15,9 @@ func get_type() -> String:
 	return "SimulationObject"
 
 func _pre_step() -> void:
-	pass
+	for child in get_children():
+		if child.has_method("_pre_step"):
+			child._pre_step()
 
 func _step(delta : float) -> void:
 	_solve_friction(delta)
@@ -23,7 +25,7 @@ func _step(delta : float) -> void:
 func _post_step() -> void:
 	if position_lock:
 		position = cached_position
-		velocity = 0
+		velocity = 0.0
 
 
 #physics

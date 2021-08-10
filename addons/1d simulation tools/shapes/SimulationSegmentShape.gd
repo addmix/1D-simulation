@@ -74,13 +74,12 @@ func bound_collision(x) -> Dictionary:
 	var bposps : float = bpos + size
 	
 	var delta_velocity : float = a.velocity - b.velocity
-	
 	if delta_velocity == 0.0:
 		return {}
 	
 	#time that segment will collide
-	var timeplus : float = (-apos + bposps) / (delta_velocity)
-	var timeminus : float = -((apos - bposps) / (delta_velocity))
+	var timeplus : float = (-apos + bpos + size) / (delta_velocity)
+	var timeminus : float = -((apos - bpos + size) / (delta_velocity))
 	
 	#collider position when segment collides
 	var posplus : float = a.position + a.velocity * timeplus
@@ -102,6 +101,7 @@ func bound_collision(x) -> Dictionary:
 		collision_time = timeplus
 	else:
 		collision_time = timeminus
+	
 	
 	var mass_ratio : float = a.mass / (a.mass + b.mass)
 	
@@ -183,14 +183,6 @@ func _oneway_collision(x) -> Dictionary:
 	
 	
 	var mass_ratio : float = a.mass / (a.mass + b.mass)
-	
-	#teleport out
-#	if abs(delta_pos) <= s:
-#		if b.get_type() == "SimulationStaticBody":
-#			collision_position = bpos + s * collision_normal
-#		else:
-#			collision_position = lerp(bpos + s * collision_normal, a.position, mass_ratio)
-#		return {"a" : a, "b" : b, "position" : collision_position, "time" : 0.0, "normal" : collision_normal}
 	
 	#collision doesnt happen this frame
 	if collision_time < 0.0:

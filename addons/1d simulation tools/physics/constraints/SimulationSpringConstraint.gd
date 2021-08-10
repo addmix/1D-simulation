@@ -10,6 +10,7 @@ func get_type() -> String:
 func _solve(delta : float) -> void:
 	#in simulation space
 	var delta_pos : float = a.position - b.position
-	a.apply_force(stiffness * -delta_pos * delta)
-	b.apply_force(stiffness * delta_pos * delta)
+	var force : float = stiffness * delta_pos * delta
+	a.apply_force(-force)
+	b.apply_force(force)
 	

@@ -9,6 +9,21 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "AttributeModifier",
+"class": "AttributeCopy",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/attribute_modifiers/attribute_copy.gd"
+}, {
+"base": "AttributeModifier",
+"class": "AttributeMapRange",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/attribute_modifiers/attribute_map_range.gd"
+}, {
+"base": "Node",
+"class": "AttributeModifier",
+"language": "GDScript",
+"path": "res://addons/1d simulation tools/attribute_modifiers/attribute_modifier.gd"
+}, {
 "base": "CSGBox",
 "class": "DebugViewer",
 "language": "GDScript",
@@ -100,6 +115,9 @@ _global_script_classes=[ {
 "path": "res://addons/1d simulation tools/core/Simulation.gd"
 } ]
 _global_script_class_icons={
+"AttributeCopy": "",
+"AttributeMapRange": "",
+"AttributeModifier": "",
 "DebugViewer": "",
 "SimulationArea": "",
 "SimulationBoundsShape": "",

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://addons/1d simulation tools/core/Simulation.gd" type="Script" id=1]
 [ext_resource path="res://addons/1d simulation tools/physics/SimulationStaticBody.gd" type="Script" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://addons/1d simulation tools/shapes/SimulationOnewayShape.gd" type="Script" id=8]
 [ext_resource path="res://addons/1d simulation tools/shapes/SimulationSegmentShape.gd" type="Script" id=9]
 [ext_resource path="res://addons/1d simulation tools/shapes/SimulationBoundShape.gd" type="Script" id=10]
+[ext_resource path="res://addons/1d simulation tools/attribute_modifiers/attribute_copy.gd" type="Script" id=11]
 
 [node name="world" type="Spatial"]
 
@@ -27,6 +28,7 @@ script = ExtResource( 4 )
 script = ExtResource( 3 )
 position = -0.198
 velocity = 0.598
+friction = 5.638
 mass = 0.32
 
 [node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/Bolt"]
@@ -57,6 +59,9 @@ script = ExtResource( 8 )
 size = 0.1
 direction = false
 
+[node name="AttributeCopy" type="Node" parent="Simulator/SimulationSpace/Sear"]
+script = ExtResource( 11 )
+
 [node name="Primer" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 3 )
 position = 1.374
@@ -81,14 +86,14 @@ stiffness = 255.0
 
 [node name="Buffer" type="Node" parent="Simulator/SimulationSpace"]
 script = ExtResource( 2 )
-position = -0.467
+position = -0.712
 
 [node name="SimulationBoundsShape" type="Node" parent="Simulator/SimulationSpace/Buffer"]
 script = ExtResource( 10 )
 direction = false
 
 [node name="DebugViewer" type="CSGBox" parent="Simulator/SimulationSpace/Buffer"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.467, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.712, 0, 0 )
 width = 0.001
 height = 1.0
 depth = 1.0

@@ -40,10 +40,10 @@ func _segment_collision(x) -> Dictionary:
 	var bpos : float = b.position + x.offset
 	var bposps : float = bpos + s
 	
-	var delta_pos : float = apos - bpos
+	var delta_pos : float = a.velocity - b.velocity
 	var delta_velocity : float = a.velocity - b.velocity
 	
-	if delta_pos == 0.0 or delta_velocity == 0.0:
+	if delta_velocity == 0.0:
 		return {}
 	
 	#time that segment will collide
@@ -72,23 +72,13 @@ func _segment_collision(x) -> Dictionary:
 		collision_position = posminus
 		collision_time = timeminus
 	
-	
 	var mass_ratio : float = a.mass / (a.mass + b.mass)
-	
-	#teleport out
-	if abs(delta_pos) <= s:
-		if b.get_type() == "SimulationStaticBody":
-			collision_position = bpos + s * collision_normal
-		else:
-			collision_position = lerp(bpos + s * collision_normal, a.position, mass_ratio)
-		return {"a" : a, "b" : b, "position" : collision_position, "time" : 0.0, "normal" : collision_normal}
-	
 	
 	#collision doesnt happen this frame
 	if collision_time <= 0.0:
 		return {}
 	
-	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
+	return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : -collision_normal}
 
 
 func bound_collision(x) -> Dictionary:
@@ -100,15 +90,14 @@ func bound_collision(x) -> Dictionary:
 	var bposps : float = bpos + size
 	
 	var delta_velocity : float = a.velocity - b.velocity
-	
 	if delta_velocity == 0.0:
 		return {}
 	
-	#time at collisions
-	var timeplus : float = (-apos + bposps) / (delta_velocity)
-	var timeminus : float = -((apos - bposps) / (delta_velocity))
+	#time that segment will collide
+	var timeplus : float = (-apos + bpos + size) / (delta_velocity)
+	var timeminus : float = -((apos - bpos + size) / (delta_velocity))
 	
-	#position at collisions
+	#collider position when segment collides
 	var posplus : float = a.position + a.velocity * timeplus
 	var posminus : float = a.position + a.velocity * timeminus
 	
@@ -129,17 +118,17 @@ func bound_collision(x) -> Dictionary:
 	else:
 		collision_time = timeminus
 	
+	
 	var mass_ratio : float = a.mass / (a.mass + b.mass)
 	
 	#this teleports objects out of each other
+	
 	if abs(apos - bpos) < size:
 		if b.get_type() == "SimulationStaticBody":
 			collision_position = bpos + size * collision_normal
 		else:
 			collision_position = lerp(bpos + size * collision_normal, apos, mass_ratio)
 		return {"a" : a, "b" : b, "position" : collision_position, "time" : collision_time, "normal" : collision_normal}
-	
-	
 	
 	#collision doesnt happen this frame
 	if collision_time <= 0.0:
